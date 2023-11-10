@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ShortUrl;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Requests\ShortUrlStoreRequest;
 
 class ShortUrlController extends Controller {
     /**
@@ -33,17 +34,7 @@ class ShortUrlController extends Controller {
     /**
      * Store a newly created resource in storage.
      */
-    public function store( Request $request ) {
-
-        //  validate input and return a error message by json according to the input
-
-        $request->validate( [
-            'long_url' => 'required|url',
-            'alias'    => 'nullable|regex:/^[a-zA-Z0-9- ]+$/u|string',
-        ], [
-            'alias.regex' => 'Please enter a valid alias, do not use any special character.',
-        ] );
-
+    public function store( ShortUrlStoreRequest $request ) {
         $longURL       = rtrim( $request->long_url, '/' );
         $shortURLQuery = ShortUrl::query();
 
