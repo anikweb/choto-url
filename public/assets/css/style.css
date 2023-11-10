@@ -1,0 +1,81 @@
+
+.btn-check:focus+.btn,
+.btn:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 0.25rem transparent;
+}
+
+/* set all font family to Agbalumo */
+
+.card-header,
+.modal-header {
+    font-family: 'Agbalumo', cursive;
+}
+
+.form-control {
+    outline: 0;
+    background: #f2f2f2;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 18px;
+}
+
+label {
+    font-weight: 600;
+
+}
+
+.main-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 15px 45px;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 24px;
+    border-radius: 3px;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.4s ease-in-out;
+    border: 1px solid transparent;
+    overflow: hidden;
+}
+
+.secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 8px 16px;
+    font-weight: 500;
+    font-size: 14px;
+    /* line-height: 24px; */
+    border-radius: 3px;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.4s ease-in-out;
+    border: 1px solid transparent;
+    overflow: hidden;
+}
+
+.card {
+    box-shadow: 3px 5px 32px #1a1a1a;
+}
