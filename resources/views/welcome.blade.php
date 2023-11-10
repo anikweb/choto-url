@@ -59,7 +59,7 @@
                                 style="cursor: text" placeholder="Enter alias">
                         </div>
 
-                        <div class="form-group text-center my-2">
+                        <div class="form-group text-center my-2 submit_btn_wrapper">
                             <button id="submit_url" class="btn btn-success text-center">Shorten URL</button>
                         </div>
                     </div>
@@ -99,12 +99,23 @@
 
                         setTimeout(() => {
                             toggleSpinner(false)
-                            if (response) {
+                            if (response.status) {
                                 console.log(response);
                                 $("#error-message").html('')
                                 $(".alias_wrapper").addClass('d-none');
                                 $(".choto_url_wrapper").removeClass('d-none');
-                                $("#choto_url").val(response);
+                                $("#choto_url").val(response.data.short_url);
+                                $("#long_url").attr('disabled', 'disabled');
+                                $(".submit_btn_wrapper").html(
+                                    `<a  href="{{ url('/') }}" class="btn btn-success text-center">Create Another</a>`
+                                )
+                            } else {
+                                let errorHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span>${response.message}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                        </div>`
+                                $("#error-message").html(errorHTML)
                             }
 
                         }, 1000);
@@ -128,9 +139,6 @@
 
         function toggleSpinner(status = true) {
             if (status) {
-
-
-
                 const html = `Processing <span class="ms-2 waveform">
                                     <div class="wave-bar"></div>
                                     <div class="wave-bar"></div>
@@ -140,11 +148,9 @@
                                     <div class="wave-bar"></div>
                                     <div class="wave-bar"></div>
                                 </span>`;
-
                 $("#submit_url").html(html).attr('disabled', 'disabled');
             } else {
                 $("#submit_url").html("Shorten URL").removeAttr("disabled")
-
             }
         }
     </script>

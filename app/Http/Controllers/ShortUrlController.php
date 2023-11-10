@@ -40,34 +40,47 @@ class ShortUrlController extends Controller {
 
         $request->validate( [
             'long_url' => 'required|url',
-            'alias'    => 'nullable|unique:short_urls,short_url',
+
+            'alias'    => 'nullable|regex:/^[a-zA-Z0-9]+$/u|string',
+        ], [
+            'alias.regex' => 'Please enter a valid alias, do not use any special character.',
         ] );
 
-        $longURL = rtrim( $request->long_url, '/' );
+        $longURL       = rtrim( $request->long_url, '/' );
+        $shortURLQuery = ShortUrl::query();
 
         if ( $request->alias == '' ) {
             // generate custom alias
-
-            $existingShortUrl = ShortUrl::where( 'long_url', $longURL )->first();
+            $existingShortUrl = ( clone $shortURLQuery )->where( 'long_url', $longURL )->first();
 
             if ( !empty( $existingShortUrl ) ) {
-                $shortURL = url( '/' ) . '/' . $existingShortUrl->short_url;
-                return response()->json( $shortURL );
-            }
+                $chotoUrl = url( '/' ) . '/' . $existingShortUrl->short_url;
 
-            do {
-                $shortURL         = Str::slug( Str::random( 6 ) );
-                $existingShortUrl = ShortUrl::where( 'short_url', $shortURL )->first();
-            } while ( !empty( $existingShortUrl ) );
+                $existingShortUrl->short_url = $chotoUrl;
+
+                return response()->json( $this->success( 'Choto URL already exist', $existingShortUrl ) );
+            }
+            // generate random alias
+            $shortURL = $this->generateRandomAlias( $shortURLQuery );
 
         } else {
             $shortURL = Str::slug( $request->alias );
-        }
 
-        // check long url is exists or not
+            $existingShortUrl = ( clone $shortURLQuery )->where( 'short_url', $shortURL )->whereNot( 'long_url', $longURL )->first();
 
-        if ( !empty( $existingShortUrl ) ) {
-            return response()->json( $existingShortUrl );
+            if ( !empty( $existingShortUrl ) ) {
+                return response()->json( $this->error( 'This alias has been taken, choose another one' ) );
+            }
+
+            $existingShortUrl = ( clone $shortURLQuery )->where( 'long_url', $longURL )->where( 'short_url', $shortURL )->first();
+
+            if ( !empty( $existingShortUrl ) ) {
+                $chotoUrl = url( '/' ) . '/' . $existingShortUrl->short_url;
+
+                $existingShortUrl->short_url = $chotoUrl;
+
+                return response()->json( $this->success( 'Choto URL already exist with this alias', $existingShortUrl ) );
+            }
         }
 
         $shortUrl = ShortUrl::create( [
@@ -75,8 +88,9 @@ class ShortUrlController extends Controller {
             'short_url' => $shortURL,
         ] );
 
-        $chotoUrl = url( '/' ) . '/' . $shortUrl->short_url;
-        return response()->json( $chotoUrl );
+        $chotoUrl            = url( '/' ) . '/' . $shortUrl->short_url;
+        $shortUrl->short_url = $chotoUrl;
+        return response()->json( $this->success( 'Choto URL generated', $shortUrl ) );
 
     }
 
@@ -85,6 +99,36 @@ class ShortUrlController extends Controller {
      */
     public function show( ShortUrl $shortUrl ) {
         //~
+    }
+
+    /**
+     * @param $message
+     */
+    public function error( $message = "Something went wrong" ): array {
+        $data = [
+            'status'  => false,
+            'code'    => 500,
+            'message' => $message,
+            'data'    => [],
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @param  array      $data
+     * @param  $message
+     * @return mixed
+     */
+    public function success( $message = "Success", $data = [], ): array {
+        $data = [
+            'status'  => true,
+            'code'    => 200,
+            'message' => $message,
+            'data'    => $data,
+        ];
+
+        return $data;
     }
 
     /**
@@ -106,5 +150,17 @@ class ShortUrlController extends Controller {
      */
     public function destroy( ShortUrl $shortUrl ) {
         //
+    }
+
+    /**
+     * @param $shortURLQuery
+     */
+    public function generateRandomAlias( $shortURLQuery ): string {
+        do {
+            $shortURL         = Str::slug( Str::random( 6 ) );
+            $existingShortUrl = ( clone $shortURLQuery )->where( 'short_url', $shortURL )->first();
+        } while ( !empty( $existingShortUrl ) );
+
+        return $shortURL;
     }
 }
