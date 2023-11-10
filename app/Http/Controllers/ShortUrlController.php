@@ -47,15 +47,21 @@ class ShortUrlController extends Controller {
 
         if ( $request->alias == '' ) {
             // generate custom alias
+
             $existingShortUrl = ShortUrl::where( 'long_url', $longURL )->first();
+
             if ( !empty( $existingShortUrl ) ) {
                 $shortURL = url( '/' ) . '/' . $existingShortUrl->short_url;
                 return response()->json( $shortURL );
             }
-            $shortURL = Str::random( 5 );
+
+            do {
+                $shortURL         = Str::slug( Str::random( 6 ) );
+                $existingShortUrl = ShortUrl::where( 'short_url', $shortURL )->first();
+            } while ( !empty( $existingShortUrl ) );
+
         } else {
-            $shortURL         = $request->alias;
-            $existingShortUrl = ShortUrl::where( 'long_url', $longURL )->where( 'short_url', $shortURL )->first();
+            $shortURL = Str::slug( $request->alias );
         }
 
         // check long url is exists or not
@@ -68,6 +74,7 @@ class ShortUrlController extends Controller {
             'long_url'  => $longURL,
             'short_url' => $shortURL,
         ] );
+
         $chotoUrl = url( '/' ) . '/' . $shortUrl->short_url;
         return response()->json( $chotoUrl );
 
