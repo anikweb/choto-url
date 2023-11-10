@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\ShortUrl;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -35,6 +36,17 @@ class ShortUrlController extends Controller {
      * Store a newly created resource in storage.
      */
     public function store( ShortUrlStoreRequest $request ) {
+
+        // Needs device ip to limit the number of URLs per day
+        $ip    = $request->getClientIp( 'X-Real-IP' );
+        $count = ShortUrl::where( 'ip', $ip )
+            ->whereDate( 'created_at', Carbon::today() )
+            ->count();
+        $limit = env( 'MAX_URL_PER_DAY' );
+        if ( $count >= $limit ) {
+            return error( "You cannot shorten more than {$limit} URLs per day, try again next day, thank you" );
+        }
+
         $longURL       = rtrim( $request->long_url, '/' );
         $shortURLQuery = ShortUrl::query();
 
@@ -43,18 +55,15 @@ class ShortUrlController extends Controller {
             $existingShortUrl = ( clone $shortURLQuery )->where( 'long_url', $longURL )->first();
 
             if ( !empty( $existingShortUrl ) ) {
-                $chotoUrl = url( '/' ) . '/' . $existingShortUrl->short_url;
-
+                $chotoUrl                    = url( '/' ) . '/' . $existingShortUrl->short_url;
                 $existingShortUrl->short_url = $chotoUrl;
-
                 return success( 'Choto URL already exist', $existingShortUrl );
             }
             // generate random alias
             $shortURL = generateRandomAlias( $shortURLQuery );
 
         } else {
-            $shortURL = Str::slug( $request->alias );
-
+            $shortURL         = Str::slug( $request->alias );
             $existingShortUrl = ( clone $shortURLQuery )->where( 'short_url', $shortURL )->whereNot( 'long_url', $longURL )->first();
 
             if ( !empty( $existingShortUrl ) ) {
@@ -75,6 +84,7 @@ class ShortUrlController extends Controller {
         $shortUrl = ShortUrl::create( [
             'long_url'  => $longURL,
             'short_url' => $shortURL,
+            'ip'        => $ip,
         ] );
 
         $chotoUrl            = url( '/' ) . '/' . $shortUrl->short_url;

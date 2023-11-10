@@ -14,5 +14,6 @@ class ShortUrl extends Model {
     protected $fillable = [
         'long_url',
         'short_url',
+        'ip',
     ];
 }

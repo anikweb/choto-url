@@ -16,10 +16,10 @@ function generateRandomAlias( $shortURLQuery ): string {
 /**
  * @param $message
  */
-function error( $message = "Something went wrong" ): array {
+function error( $message = "Something went wrong", $code = 500 ): array {
     $data = [
         'status'  => false,
-        'code'    => 500,
+        'code'    => $code,
         'message' => $message,
         'data'    => [],
     ];
