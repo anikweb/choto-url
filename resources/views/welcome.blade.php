@@ -69,6 +69,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 
     <script>
@@ -158,10 +159,10 @@
         function generateBtn(url) {
             let html = `
         <button onclick="copyToClipboard('${url}', this)" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Copied!"><i class="fa-solid fa-copy"></i> Copy</button>
+        <button onclick="generateQRCode('${url}')" class="btn btn-primary"><i class="fa-solid fa-qrcode"></i> QR Code</button>
         <a href="${url}" target="_blank" class="btn btn-primary"><i class="fa-solid fa-share"></i> Visit</a>`;
             return html;
         }
-
 
         function copyToClipboard(text, btnElement) {
             navigator.clipboard.writeText(text).then(function() {
@@ -175,6 +176,35 @@
             }, function(err) {
                 console.error('Could not copy text: ', err);
             });
+        }
+
+        function generateQRCode(url) {
+            // Create a temporary element
+            let tempElem = document.createElement('div');
+
+            let qrcode = new QRCode(tempElem, {
+                text: url,
+                width: 400,
+                height: 400,
+                colorDark: "#000000",
+                colorLight: "#ffffff"
+            });
+
+            let qrCanvas = tempElem.querySelector('canvas');
+            let largerCanvas = document.createElement('canvas');
+            largerCanvas.width = 420; // Add 20px to the original size
+            largerCanvas.height = 420; // Add 20px to the original size
+
+            let ctx = largerCanvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; // Fill with white
+            ctx.fillRect(0, 0, largerCanvas.width, largerCanvas.height);
+            ctx.drawImage(qrCanvas, 10, 10); // Draw the QR code 10px from the top-left corner
+
+            let img = largerCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            let link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = img;
+            link.click();
         }
     </script>
 </body>
