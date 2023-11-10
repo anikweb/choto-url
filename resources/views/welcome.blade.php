@@ -6,7 +6,6 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Bootstrap CSS -->
@@ -23,10 +22,8 @@
             background-attachment: fixed;
         }
 
-        .btn-check:focus+.btn-success,
-        .btn-success:focus {
-            color: #fff;
-            background-color: #157347;
+        .btn-check:focus+.btn,
+        .btn:focus {
             border-color: transparent;
             box-shadow: 0 0 0 0.25rem transparent;
         }
@@ -59,6 +56,8 @@
                                 style="cursor: text" placeholder="Enter alias">
                         </div>
 
+                        <div class="generatedBtn"></div>
+
                         <div class="form-group text-center my-2 submit_btn_wrapper">
                             <button id="submit_url" class="btn btn-success text-center">Shorten URL</button>
                         </div>
@@ -67,20 +66,13 @@
             </div>
         </div>
     </div>
-
-
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <script>
         $(document).ready(function() {
-
-
             $('#submit_url').click(function(event) {
-
                 toggleSpinner();
-
                 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 const url = "{{ route('short-url.store') }}"
                 const long_url = $("#long_url").val();
@@ -106,9 +98,16 @@
                                 $(".choto_url_wrapper").removeClass('d-none');
                                 $("#choto_url").val(response.data.short_url);
                                 $("#long_url").attr('disabled', 'disabled');
+
                                 $(".submit_btn_wrapper").html(
-                                    `<a  href="{{ url('/') }}" class="btn btn-success text-center">Create Another</a>`
+                                    `<a  href="{{ url('/') }}" class="btn btn-success text-center">Shorten Another</a>`
                                 )
+
+                                // generated btn
+                                $(".generatedBtn").html(generateBtn(response.data
+                                    .short_url))
+
+
                             } else {
                                 let errorHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <span>${response.message}</span>
@@ -152,6 +151,23 @@
             } else {
                 $("#submit_url").html("Shorten URL").removeAttr("disabled")
             }
+        }
+
+        function generateBtn(url) {
+            let html =
+                `
+                <button onclick="copyToClipboard('${url}')" class="btn btn-success"><i class="fa-solid fa-copy"></i> Copy</button>
+                <a href="${url}" target="_blank" class="btn btn-primary"><i class="fa-solid fa-share"></i> Visit</a>`;
+
+            return html;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                console.log('Copying to clipboard was successful!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
         }
     </script>
 </body>
