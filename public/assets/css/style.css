@@ -1,4 +1,3 @@
-
 .btn-check:focus+.btn,
 .btn:focus {
     border-color: transparent;
@@ -78,4 +77,12 @@ label {
 
 .card {
     box-shadow: 3px 5px 32px #1a1a1a;
+}
+
+.copyright-footer {
+
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
 }
