@@ -37,14 +37,12 @@ class ShortUrlController extends Controller {
      */
     public function store( ShortUrlStoreRequest $request ) {
 
-        // Needs device ip to limit the number of URLs per day
+        // ip validation
         $ip    = $request->getClientIp( 'X-Real-IP' );
-        $count = ShortUrl::where( 'ip', $ip )
-            ->whereDate( 'created_at', Carbon::today() )
-            ->count();
-        $limit = env( 'MAX_URL_PER_DAY' );
-        if ( $count >= $limit ) {
-            return error( "You cannot shorten more than {$limit} URLs per day, try again next day, thank you" );
+        $limit = intval( env( 'DAILY_LIMIT', 10 ) );
+
+        if ( $this->isReachedDayLimit( $ip, $limit ) ) {
+            return error( 'You have reached your daily limit' );
         }
 
         $longURL       = rtrim( $request->long_url, '/' );
@@ -91,6 +89,20 @@ class ShortUrlController extends Controller {
         $shortUrl->short_url = $chotoUrl;
         return success( 'Choto URL generated', $shortUrl );
 
+    }
+
+    /**
+     * @param $ip
+     */
+    private function isReachedDayLimit( string $ip, int $limit ): bool {
+        $count = ShortUrl::where( 'ip', $ip )
+            ->whereDate( 'created_at', Carbon::today() )
+            ->count();
+
+        if ( $count >= $limit ) {
+            return true;
+        }
+        return false;
     }
 
     /**
