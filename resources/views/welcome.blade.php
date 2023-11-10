@@ -11,7 +11,8 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    <link rel="stylesheet" href="{{ asset('assets/img/css/loader.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/loader.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <style>
         body {
             background-color: #f5f5f5;
@@ -68,6 +69,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 
     <script>
         $(document).ready(function() {
@@ -154,17 +156,22 @@
         }
 
         function generateBtn(url) {
-            let html =
-                `
-                <button onclick="copyToClipboard('${url}')" class="btn btn-success"><i class="fa-solid fa-copy"></i> Copy</button>
-                <a href="${url}" target="_blank" class="btn btn-primary"><i class="fa-solid fa-share"></i> Visit</a>`;
-
+            let html = `
+        <button onclick="copyToClipboard('${url}', this)" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Copied!"><i class="fa-solid fa-copy"></i> Copy</button>
+        <a href="${url}" target="_blank" class="btn btn-primary"><i class="fa-solid fa-share"></i> Visit</a>`;
             return html;
         }
 
-        function copyToClipboard(text) {
+
+        function copyToClipboard(text, btnElement) {
             navigator.clipboard.writeText(text).then(function() {
                 console.log('Copying to clipboard was successful!');
+                // Show tooltip
+                $(btnElement).tooltip('show');
+                // Hide tooltip after 2 seconds
+                setTimeout(function() {
+                    $(btnElement).tooltip('hide');
+                }, 2000);
             }, function(err) {
                 console.error('Could not copy text: ', err);
             });
