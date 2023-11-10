@@ -67,6 +67,31 @@
             </div>
         </div>
     </div>
+
+    {{-- QR Modal  --}}
+
+    <div class="modal fade " id="qrModal" tabindex="-1" role="dialog" aria-labelledby="qrModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="qrModalLabel">QR Code</h5>
+                    <button type="button" class="close btn text-white closeModalButton" data-dismiss="modal"
+                        aria-label="Close">
+                        <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex justify-content-center align-items-center">
+                    <canvas id="qrcode"></canvas>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+
+                    <a id="downloadLink" class="btn btn-success" download="qrcode.png"><i
+                            class="fa-solid fa-download"></i> Download</a>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
@@ -159,7 +184,7 @@
         function generateBtn(url) {
             let html = `
         <button onclick="copyToClipboard('${url}', this)" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Copied!"><i class="fa-solid fa-copy"></i> Copy</button>
-        <button onclick="generateQRCode('${url}')" class="btn btn-primary"><i class="fa-solid fa-qrcode"></i> QR Code</button>
+        <button onclick="generateQRCode('${url}',this)" class="btn btn-primary"><i class="fa-solid fa-qrcode"></i> QR Code</button>
         <a href="${url}" target="_blank" class="btn btn-primary"><i class="fa-solid fa-share"></i> Visit</a>`;
             return html;
         }
@@ -178,8 +203,19 @@
             });
         }
 
-        function generateQRCode(url) {
-            // Create a temporary element
+        function generateQRCode(url, btn) {
+
+            const html = `<i class="fa-solid fa-qrcode"></i> Generating QR <span class="ms-2 waveform">
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                </span>`;
+            $(btn).html(html).attr('disabled', 'disabled');
+
             let tempElem = document.createElement('div');
 
             let qrcode = new QRCode(tempElem, {
@@ -191,7 +227,7 @@
             });
 
             let qrCanvas = tempElem.querySelector('canvas');
-            let largerCanvas = document.createElement('canvas');
+            let largerCanvas = document.getElementById('qrcode');
             largerCanvas.width = 420; // Add 20px to the original size
             largerCanvas.height = 420; // Add 20px to the original size
 
@@ -201,11 +237,20 @@
             ctx.drawImage(qrCanvas, 10, 10); // Draw the QR code 10px from the top-left corner
 
             let img = largerCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-            let link = document.createElement('a');
-            link.download = 'qrcode.png';
+            let link = document.getElementById('downloadLink');
             link.href = img;
-            link.click();
+
+            setTimeout(() => {
+                $(btn).html(`<i class="fa-solid fa-qrcode"></i> QR Code`).removeAttr('disabled');
+                $('#qrModal').modal('show');
+            }, 1500);
         }
+
+
+
+        $('.closeModalButton').click(function() {
+            $('#qrModal').modal('hide');
+        });
     </script>
 </body>
 
