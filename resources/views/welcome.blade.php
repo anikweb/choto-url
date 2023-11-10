@@ -22,8 +22,7 @@
     <meta property="og:title" content="Choto URL">
     <meta property="og:description" content="Make your long URL to short URL easily.">
     <meta property="og:image" content="{{ asset('assets/img/featured_image.jpeg') }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    
 
 
     <!-- Twitter -->
@@ -32,8 +31,7 @@
     <meta property="twitter:title" content="Choto URL">
     <meta property="twitter:description" content="Make your long URL to short URL easily.">
     <meta property="twitter:image" content="{{ asset('assets/img/featured_image.jpeg') }}">
-    <meta property="twitter:image:width" content="1200">
-    <meta property="twitter:image:height" content="630">
+
 
 
     <!-- Bootstrap CSS -->
