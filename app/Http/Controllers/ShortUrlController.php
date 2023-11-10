@@ -26,7 +26,15 @@ class ShortUrlController extends Controller {
      */
     public function store( Request $request ) {
 
+        //  validate input and return a error message by json according to the input
+
+        $request->validate( [
+            'long_url' => 'required|url',
+            'alias'    => 'nullable|unique:short_urls,short_url',
+        ] );
+
         $input = $request->except( '_token' );
+
         if ( $request->alias == '' ) {
             // generate custom alias
             $input['short_url'] = Str::random( 5 );

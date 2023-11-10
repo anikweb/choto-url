@@ -34,15 +34,20 @@
                         <h3 class="text-success">Choto URL</h3>
                     </div>
                     <div class="card-body">
-
-                        <div class="form group my-2 ">
+                        <div id="error-message"></div>
+                        <div class="form group my-2 long_url_wrapper">
                             <label for="long_url"><i class="fa-solid fa-link"></i> Long URL</label>
                             <input type="url" id="long_url" class="form-control"
                                 placeholder="Enter your long URL here">
                         </div>
-                        <div class="form group my-2">
+                        <div class="form group my-2 alias_wrapper">
                             <label for="alias"> Alias <span>Optional</span></label>
                             <input type="text" id="alias" class="form-control" placeholder="Enter alias">
+                        </div>
+                        <div class="form group my-2 d-none choto_url_wrapper">
+                            <label for="choto_url"> <i class="fa-solid fa-paperclip"></i> Your Choto URL</span></label>
+                            <input disabled type="text" id="choto_url" class="form-control" value="choto_url"
+                                style="cursor: text" placeholder="Enter alias">
                         </div>
 
                         <div class="form-group text-center my-2">
@@ -79,10 +84,19 @@
                     url: url,
                     data: data,
                     success: function(response) {
-                        console.log(response);
+                        if (response) {
+                            $(".alias_wrapper").addClass('d-none');
+                            $(".choto_url_wrapper").removeClass('d-none');
+                            $("#choto_url").val(response.short_url);
+                        }
                     },
                     error: function(error) {
-                        console.log(error.responseJSON.message);
+                        let errorHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span>${error.responseJSON.message}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                        </div>`
+                        $("#error-message").html(errorHTML)
                     }
                 });
             })
