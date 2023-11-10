@@ -15,8 +15,7 @@ class ShortUrlController extends Controller {
         if ( $slug != '' ) {
             $shortUrl = ShortUrl::where( 'short_url', $slug )->first();
             if ( !empty( $shortUrl ) ) {
-                return redirect( $shortUrl->long_url );
-
+                return redirect()->away( $shortUrl->long_url, 301 );
             }
             return abort( 404 );
         } else {
@@ -57,10 +56,10 @@ class ShortUrlController extends Controller {
 
                 $existingShortUrl->short_url = $chotoUrl;
 
-                return response()->json( $this->success( 'Choto URL already exist', $existingShortUrl ) );
+                return response()->json( success( 'Choto URL already exist', $existingShortUrl ) );
             }
             // generate random alias
-            $shortURL = $this->generateRandomAlias( $shortURLQuery );
+            $shortURL = generateRandomAlias( $shortURLQuery );
 
         } else {
             $shortURL = Str::slug( $request->alias );
@@ -68,7 +67,7 @@ class ShortUrlController extends Controller {
             $existingShortUrl = ( clone $shortURLQuery )->where( 'short_url', $shortURL )->whereNot( 'long_url', $longURL )->first();
 
             if ( !empty( $existingShortUrl ) ) {
-                return response()->json( $this->error( 'This alias has been taken, choose another one' ) );
+                return response()->json( error( 'This alias has been taken, choose another one' ) );
             }
 
             $existingShortUrl = ( clone $shortURLQuery )->where( 'long_url', $longURL )->where( 'short_url', $shortURL )->first();
@@ -78,7 +77,7 @@ class ShortUrlController extends Controller {
 
                 $existingShortUrl->short_url = $chotoUrl;
 
-                return response()->json( $this->success( 'Choto URL already exist with this alias', $existingShortUrl ) );
+                return response()->json( success( 'Choto URL already exist with this alias', $existingShortUrl ) );
             }
         }
 
@@ -89,7 +88,7 @@ class ShortUrlController extends Controller {
 
         $chotoUrl            = url( '/' ) . '/' . $shortUrl->short_url;
         $shortUrl->short_url = $chotoUrl;
-        return response()->json( $this->success( 'Choto URL generated', $shortUrl ) );
+        return response()->json( success( 'Choto URL generated', $shortUrl ) );
 
     }
 
@@ -98,36 +97,6 @@ class ShortUrlController extends Controller {
      */
     public function show( ShortUrl $shortUrl ) {
         //~
-    }
-
-    /**
-     * @param $message
-     */
-    public function error( $message = "Something went wrong" ): array {
-        $data = [
-            'status'  => false,
-            'code'    => 500,
-            'message' => $message,
-            'data'    => [],
-        ];
-
-        return $data;
-    }
-
-    /**
-     * @param  array      $data
-     * @param  $message
-     * @return mixed
-     */
-    public function success( $message = "Success", $data = [], ): array {
-        $data = [
-            'status'  => true,
-            'code'    => 200,
-            'message' => $message,
-            'data'    => $data,
-        ];
-
-        return $data;
     }
 
     /**
@@ -154,12 +123,5 @@ class ShortUrlController extends Controller {
     /**
      * @param $shortURLQuery
      */
-    public function generateRandomAlias( $shortURLQuery ): string {
-        do {
-            $shortURL         = Str::slug( Str::random( 6 ) );
-            $existingShortUrl = ( clone $shortURLQuery )->where( 'short_url', $shortURL )->first();
-        } while ( !empty( $existingShortUrl ) );
 
-        return $shortURL;
-    }
 }
