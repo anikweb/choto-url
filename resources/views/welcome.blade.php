@@ -35,7 +35,7 @@
 
     <div class="container-fluid">
         <div class="row d-flex justify-content-center align-items-center" style="height: 100vh">
-            <div class="col-md-4">
+            <div class="col-xl-5 col-md-8 col-12">
                 <div class="card">
                     <div class="card-header text-center">
                         <h2 class="text-success">Choto URL</h2>
@@ -44,8 +44,7 @@
                         <div id="error-message"></div>
                         <div class="form group my-2 long_url_wrapper">
                             <label for="long_url"><i class="lni lni-link"></i> Long URL</label>
-                            <input type="url" id="long_url" class="form-control"
-                                placeholder="Enter your long URL here">
+                            <input type="url" id="long_url" class="form-control" placeholder="Enter URL">
                         </div>
                         <div class="form group my-2 alias_wrapper">
                             <label for="alias"> Alias <span><small>(Optional)</small></span></label>
@@ -82,7 +81,7 @@
                     </button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center">
-                    <canvas id="qrcode"></canvas>
+                    <canvas id="qrcode" style="overflow: hidden"></canvas>
                 </div>
                 <div class="modal-footer d-flex justify-content-center">
 
@@ -184,18 +183,16 @@
         function generateBtn(url) {
             let html =
                 `
-        <button onclick="copyToClipboard('${url}', this)" class="btn secondary-btn btn-success" data-toggle="tooltip" data-placement="top" title="Copied!"><i class="lni lni-clipboard"></i> Copy</button>
-        <button onclick="generateQRCode('${url}',this)" class="btn secondary-btn btn-primary"><i class="fa-solid fa-qrcode"></i> QR Code</button>
-        <a href="${url}" target="_blank" class="btn btn-primary secondary-btn"><i class="fa-solid fa-share"></i> Visit</a>`;
+        <button onclick="copyToClipboard('${url}', this)" class="btn secondary-btn btn-success my-1" data-toggle="tooltip" data-placement="top" title="Copied!"><i class="lni lni-clipboard"></i> Copy</button>
+        <button onclick="generateQRCode('${url}',this)" class="btn secondary-btn btn-primary my-1"><i class="fa-solid fa-qrcode"></i> QR Code</button>
+        <a href="${url}" target="_blank" class="btn btn-primary secondary-btn my-1"><i class="fa-solid fa-share"></i> Visit</a>`;
             return html;
         }
 
         function copyToClipboard(text, btnElement) {
             navigator.clipboard.writeText(text).then(function() {
                 console.log('Copying to clipboard was successful!');
-                // Show tooltip
                 $(btnElement).tooltip('show');
-                // Hide tooltip after 2 seconds
                 setTimeout(function() {
                     $(btnElement).tooltip('hide');
                 }, 2000);
@@ -229,13 +226,13 @@
 
             let qrCanvas = tempElem.querySelector('canvas');
             let largerCanvas = document.getElementById('qrcode');
-            largerCanvas.width = 420; // Add 20px to the original size
-            largerCanvas.height = 420; // Add 20px to the original size
+            largerCanvas.width = 420;
+            largerCanvas.height = 420;
 
             let ctx = largerCanvas.getContext('2d');
-            ctx.fillStyle = '#ffffff'; // Fill with white
+            ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, largerCanvas.width, largerCanvas.height);
-            ctx.drawImage(qrCanvas, 10, 10); // Draw the QR code 10px from the top-left corner
+            ctx.drawImage(qrCanvas, 10, 10);
 
             let img = largerCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
             let link = document.getElementById('downloadLink');
