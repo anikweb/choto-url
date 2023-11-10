@@ -40,8 +40,7 @@ class ShortUrlController extends Controller {
 
         $request->validate( [
             'long_url' => 'required|url',
-
-            'alias'    => 'nullable|regex:/^[a-zA-Z0-9]+$/u|string',
+            'alias'    => 'nullable|regex:/^[a-zA-Z0-9- ]+$/u|string',
         ], [
             'alias.regex' => 'Please enter a valid alias, do not use any special character.',
         ] );
