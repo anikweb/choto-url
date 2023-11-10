@@ -28,7 +28,7 @@ class ShortUrlController extends Controller {
      * Show the form for creating a new resource.
      */
     public function create() {
-        //
+        // return
     }
 
     /**
@@ -47,7 +47,7 @@ class ShortUrlController extends Controller {
 
                 $existingShortUrl->short_url = $chotoUrl;
 
-                return response()->json( success( 'Choto URL already exist', $existingShortUrl ) );
+                return success( 'Choto URL already exist', $existingShortUrl );
             }
             // generate random alias
             $shortURL = generateRandomAlias( $shortURLQuery );
@@ -58,7 +58,7 @@ class ShortUrlController extends Controller {
             $existingShortUrl = ( clone $shortURLQuery )->where( 'short_url', $shortURL )->whereNot( 'long_url', $longURL )->first();
 
             if ( !empty( $existingShortUrl ) ) {
-                return response()->json( error( 'This alias has been taken, choose another one' ) );
+                return error( 'This alias has been taken, choose another one' );
             }
 
             $existingShortUrl = ( clone $shortURLQuery )->where( 'long_url', $longURL )->where( 'short_url', $shortURL )->first();
@@ -68,7 +68,7 @@ class ShortUrlController extends Controller {
 
                 $existingShortUrl->short_url = $chotoUrl;
 
-                return response()->json( success( 'Choto URL already exist with this alias', $existingShortUrl ) );
+                return success( 'Choto URL already exist with this alias', $existingShortUrl );
             }
         }
 
@@ -79,7 +79,7 @@ class ShortUrlController extends Controller {
 
         $chotoUrl            = url( '/' ) . '/' . $shortUrl->short_url;
         $shortUrl->short_url = $chotoUrl;
-        return response()->json( success( 'Choto URL generated', $shortUrl ) );
+        return success( 'Choto URL generated', $shortUrl );
 
     }
 
