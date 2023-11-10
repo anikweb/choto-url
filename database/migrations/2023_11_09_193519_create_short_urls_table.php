@@ -12,7 +12,8 @@ return new class extends Migration {
         Schema::create( 'short_urls', function ( Blueprint $table ) {
             $table->id();
             $table->longText( 'long_url' );
-            $table->longText( 'short_url' )->unique();
+            // add short text with max key limit
+            $table->longText( 'short_url' );
             $table->timestamps();
         } );
     }
