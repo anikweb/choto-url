@@ -14,11 +14,11 @@ use App\Http\Controllers\ShortUrlController;
 |
  */
 
-Route::get( '/', function () {
-    return view( 'welcome' );
+Route::controller( ShortUrlController::class )->name( 'short-url.' )->prefix( '/' )->group( function () {
+    Route::get( '/', 'index' )->name( 'index' );
+    Route::get( '/{slug}', 'index' )->name( 'index' );
 } );
 
-// add resource full controller here
 Route::resource( 'short-url', ShortUrlController::class );
 
 // Route::get('/dashboard', function () {

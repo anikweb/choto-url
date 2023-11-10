@@ -85,12 +85,15 @@
                     data: data,
                     success: function(response) {
                         if (response) {
+                            console.log(response);
+                            $("#error-message").html('')
                             $(".alias_wrapper").addClass('d-none');
                             $(".choto_url_wrapper").removeClass('d-none');
-                            $("#choto_url").val(response.short_url);
+                            $("#choto_url").val(response);
                         }
                     },
                     error: function(error) {
+                        console.log(error);
                         let errorHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <span>${error.responseJSON.message}</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"

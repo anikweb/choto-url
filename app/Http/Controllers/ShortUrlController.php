@@ -10,8 +10,18 @@ class ShortUrlController extends Controller {
     /**
      * Display a listing of the resource.
      */
-    public function index() {
-        //
+    public function index( $slug = '' ) {
+
+        if ( $slug != '' ) {
+            $shortUrl = ShortUrl::where( 'short_url', $slug )->first();
+            if ( !empty( $shortUrl ) ) {
+                return redirect( $shortUrl->long_url );
+
+            }
+            return abort( 404 );
+        } else {
+            return view( 'welcome' );
+        }
     }
 
     /**
@@ -33,17 +43,33 @@ class ShortUrlController extends Controller {
             'alias'    => 'nullable|unique:short_urls,short_url',
         ] );
 
-        $input = $request->except( '_token' );
+        $longURL = rtrim( $request->long_url, '/' );
 
         if ( $request->alias == '' ) {
             // generate custom alias
-            $input['short_url'] = Str::random( 5 );
+            $existingShortUrl = ShortUrl::where( 'long_url', $longURL )->first();
+            if ( !empty( $existingShortUrl ) ) {
+                $shortURL = url( '/' ) . '/' . $existingShortUrl->short_url;
+                return response()->json( $shortURL );
+            }
+            $shortURL = Str::random( 5 );
         } else {
-            $input['short_url'] = $request->alias;
+            $shortURL         = $request->alias;
+            $existingShortUrl = ShortUrl::where( 'long_url', $longURL )->where( 'short_url', $shortURL )->first();
         }
 
-        $shortUrl = ShortUrl::create( $input );
-        return response()->json( $shortUrl );
+        // check long url is exists or not
+
+        if ( !empty( $existingShortUrl ) ) {
+            return response()->json( $existingShortUrl );
+        }
+
+        $shortUrl = ShortUrl::create( [
+            'long_url'  => $longURL,
+            'short_url' => $shortURL,
+        ] );
+        $chotoUrl = url( '/' ) . '/' . $shortUrl->short_url;
+        return response()->json( $chotoUrl );
 
     }
 

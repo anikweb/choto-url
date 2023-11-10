@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create( 'short_urls', function ( Blueprint $table ) {
             $table->id();
-            $table->longText( 'long_url' )->unique();
+            $table->longText( 'long_url' );
             $table->longText( 'short_url' )->unique();
             $table->timestamps();
         } );
