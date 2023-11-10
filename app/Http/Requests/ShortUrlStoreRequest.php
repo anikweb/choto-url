@@ -20,7 +20,10 @@ class ShortUrlStoreRequest extends FormRequest {
     public function rules(): array {
 
         return [
-            'long_url' => 'required|url',
+            'long_url' => [
+                'required',
+                'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            ],
             'alias'    => 'nullable|regex:/^[a-zA-Z0-9- ]+$/u|string',
         ];
     }
